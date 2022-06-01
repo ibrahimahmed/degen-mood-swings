@@ -1,5 +1,5 @@
 // SPDX-License-Identifier: MIT
-pragma solidity ^0.8.10;
+pragma solidity ^0.8.4;
 
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "erc721a/contracts/ERC721A.sol";
@@ -13,8 +13,8 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
     uint256 _maxSupply;
     uint256 maxMintAmountPerTx;
     uint256 maxMintAmountPerWallet;
-    uint256 public maxFree;
-    uint256 public maxperAddressFreeLimit;
+    uint256 maxFree;
+    uint256 maxperAddressFreeLimit;
 
     string baseURL = ""; // base uri for meta data
     string ExtensionURL = ".json";
@@ -47,7 +47,7 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
         require(!paused, "The contract is paused!"); // check if contract is paused
         // check if mint amount is greater than max mint amount per tx
         require(
-            _mintAmount > 0 && _mintAmount <= maxMintAmountPerTx,
+            _mintAmount > 0 && _mintAmount <= maxMintAmountPerTx ,
             "Invalid mint amount!"
         ); 
         // check if mint amount is greater than max supply
@@ -120,29 +120,7 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
         (bool success, ) = payable(owner()).call{value: CurrentContractBalance}("");
         require(success, "Withdraw failed!");
     }
-
-    // ================================ Gift Function ====================
-    function gift(uint256[] calldata quantity, address[] calldata recipient)
-        external
-        onlyOwner
-    {
-        require(
-            quantity.length == recipient.length,
-            "Provide quantities and recipients"
-        ); 
-        uint256 totalQuantity = 0;
-        uint256 s = totalSupply();
-        for (uint256 i = 0; i < quantity.length; ++i) {
-            totalQuantity += quantity[i];
-        }
-        require(s + totalQuantity <= _maxSupply, "Too many");
-        delete totalQuantity;
-        for (uint256 i = 0; i < recipient.length; ++i) {
-            _safeMint(recipient[i], quantity[i]);
-        }
-        delete s;
-    }
-
+    
     // =================== (View Only) ====================
 
     function tokenURI(uint256 tokenId)
