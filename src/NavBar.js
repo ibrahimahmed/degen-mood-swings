@@ -18,11 +18,11 @@ const NavBar = ({accounts,setAccounts}) => {
         <Flex justify="space-between" align="center" padding="30px">
                    {/*// Left side of the navbar */} 
 
-            <Flex justify="space-around" wridth='40%' padding="0 75px">
-                <Link href="https://twitter.com/home" margin="0 15px">
+            <Flex justify="space-around" width='40%' padding="0 75px">
+                <Link href="https://opensea.io/collection/degen-mood-swings" margin="0 15px">
                     <Image src={Twitter} />
                 </Link>
-                <Link href="https://etherscan.io/address/0x0651132f094551f9d4E40de3e1E2F8B7Ac149c3A" margin="0 15px">
+                <Link href="https://etherscan.io/address/0x8d127a72ec9e591147cf8827da1e47ab7035b582" margin="0 15px">
                     <Image src={Ether}/>
                 </Link>
                 

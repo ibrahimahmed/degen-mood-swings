@@ -1,21 +1,16 @@
-import { useState } from "react";
+import { useState, useEffect } from "react";
 import { ethers, BigNumber } from "ethers";
 import degenMoodSwings from "./DegenMoodSwings.json";
 import {Box,Button,Flex,Image,Link,Spacer, Text,Input} from '@chakra-ui/react';
-import {
-    Alert,
-    AlertIcon,
-    AlertTitle,
-    AlertDescription,
-  } from '@chakra-ui/react'
 
 
-const degenMoodSwingsAddress = '0x523F56FAC4646ad20fB907dB015A06d4a9294557';
+const degenMoodSwingsAddress = '0x8D127A72eC9E591147Cf8827da1e47Ab7035b582';
 
 const MainMint = ({ accounts, setAccounts }) => {
     const [mintAmount, setMintAmount] = useState(1);
     const [mintFreeAmount, setMintFreeAmount] = useState(1);
     const isConnected = Boolean(accounts[0]);
+ 
 
     async function handleMint() {
         const provider = new ethers.providers.Web3Provider(window.ethereum);
@@ -26,9 +21,10 @@ const MainMint = ({ accounts, setAccounts }) => {
                 value : ethers.utils.parseEther((0.005 * mintAmount).toString())
             });
             console.log(response);
-        }
+         }
         catch (error) {
             console.log(error)
+            alert("Your mint failed!" + error);
         }
     }
     async function handleFreeMint() {
@@ -138,7 +134,8 @@ const MainMint = ({ accounts, setAccounts }) => {
                         fontFamily='inherit'
                         padding='15px'
                         margin='10px'
-                        onClick={handleDecrementFree}>-</Button>
+                        onClick={handleDecrementFree}
+                        >-</Button>
                         <Input 
                          readOnly
                          fontFamily = 'inherit'
