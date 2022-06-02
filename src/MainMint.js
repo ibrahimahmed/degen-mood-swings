@@ -53,7 +53,7 @@ const MainMint = ({ accounts, setAccounts }) => {
     }
 
     const handleIncrement = () => {
-        if (mintAmount >= 20) return;
+        if (mintAmount >= 10) return;
         setMintAmount(mintAmount + 1);
     }
 
