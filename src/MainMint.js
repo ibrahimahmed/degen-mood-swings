@@ -21,6 +21,8 @@ const MainMint = ({ accounts, setAccounts }) => {
                 value : ethers.utils.parseEther((0.005 * mintAmount).toString())
             });
             console.log(response);
+            alert("Your mint is being processed. Please wait for the transaction to be mined. You can check the transaction on etherscan.io");
+
          }
         catch (error) {
             console.log(error)
@@ -36,9 +38,12 @@ const MainMint = ({ accounts, setAccounts }) => {
                 value : ethers.utils.parseEther((0.0 * mintFreeAmount).toString())
             });
             console.log(response);
+            alert("Your mint is being processed. Please wait for the transaction to be mined. You can check the transaction on etherscan.io");
+
         }
         catch (error) {
             console.log(error)
+            alert("Your mint failed!" + error);
         }
     }
 
