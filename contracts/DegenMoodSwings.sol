@@ -4,7 +4,6 @@ pragma solidity ^0.8.4;
 import "@openzeppelin/contracts/access/Ownable.sol";
 import "erc721a/contracts/ERC721A.sol";
 import "@openzeppelin/contracts/utils/Strings.sol";
-
 import "@openzeppelin/contracts/security/ReentrancyGuard.sol";
 
 contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
@@ -13,32 +12,28 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
     uint256 _maxSupply;
     uint256 maxMintAmountPerTx;
     uint256 maxMintAmountPerWallet;
-    uint256 maxFree;
-    uint256 maxperAddressFreeLimit;
-
     string baseURL = ""; // base uri for meta data
     string ExtensionURL = ".json";
-
+    string unRevealedURL = ""; // unrevealed url for getting placeholder
     bool paused = false; // by default contract is paused
+    bool revealed = false; // by default collection is unrevealed 
 
-    mapping(address => uint256) public addressFreeMintedBalance; // to keep track of free minted balance per address
 
     constructor(
         uint256 _price,
         uint256 __maxSupply,
         string memory _initBaseURI,
+        string memory _initNotRevealedUri,
         uint256 _maxMintAmountPerTx,
-        uint256 _maxMintAmountPerWallet,
-        uint256 _maxFree,
-        uint256 _maxperAddressFreeLimit
-    ) ERC721A("Degen Mood Swings", "DMS") {
+        uint256 _maxMintAmountPerWallet
+    ) ERC721A("DegenMoodSwings", "MS") {
         baseURL = _initBaseURI; // setting cloud ipfs address
         price = _price; // setting price of token
         _maxSupply = __maxSupply;   // setting max supply of token
         maxMintAmountPerTx = _maxMintAmountPerTx; // setting max mint amount per tx
         maxMintAmountPerWallet = _maxMintAmountPerWallet; // setting max mint amount per wallet
-        maxFree = _maxFree; // setting max free mint amount per address
-        maxperAddressFreeLimit = _maxperAddressFreeLimit; // setting max free mint amount per address
+        unRevealedURL = _initNotRevealedUri; // setting unreveal metadata
+        mint(3);
     }
 
     // ================== Mint Function =======================
@@ -47,7 +42,7 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
         require(!paused, "The contract is paused!"); // check if contract is paused
         // check if mint amount is greater than max mint amount per tx
         require(
-            _mintAmount > 0 && _mintAmount <= maxMintAmountPerTx ,
+            _mintAmount <= maxMintAmountPerTx ,
             "Invalid mint amount!"
         ); 
         // check if mint amount is greater than max supply
@@ -68,25 +63,6 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
         _safeMint(msg.sender, _mintAmount);
     }
 
-    function MintFree(uint256 _mintAmount) public payable nonReentrant {
-        uint256 s = totalSupply();
-        uint256 addressFreeMintedCount = addressFreeMintedBalance[msg.sender]; // get free minted balance of address
-        require(!paused, "The contract is paused!"); // check if contract is paused
-        // check if mint amount is greater than max free mint amount per tx
-        require(
-            addressFreeMintedCount + _mintAmount <= maxperAddressFreeLimit,
-            "max NFT per address exceeded"
-        );
-        require(_mintAmount > 0, "Cant mint 0");
-        require(s + _mintAmount <= maxFree, "Cant go over supply");
-        for (uint256 i = 0; i < _mintAmount; ++i) {
-            addressFreeMintedBalance[msg.sender]++; // increment free minted balance of token address
-        }
-        _safeMint(msg.sender, _mintAmount);
-        delete s;
-        delete addressFreeMintedCount;
-    }
-
     // ================== (Owner Only) ===============
 
     function pause(bool state) public onlyOwner {
@@ -99,6 +75,9 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
 
     function setbaseURL(string memory uri) public onlyOwner {
         baseURL = uri;
+    }
+    function setUnrevealURL(string memory notRevealuri) public onlyOwner {
+        unRevealedURL = notRevealuri;
     }
 
     function setExtensionURL(string memory uri) public onlyOwner {
@@ -134,6 +113,10 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
             "ERC721Metadata: URI query for nonexistent token"
         );
 
+        if(revealed==false){
+            return unRevealedURL;
+        }
+
         string memory currentBaseURI = _baseURI();
         return
             bytes(currentBaseURI).length > 0
@@ -154,7 +137,7 @@ contract DegenMoodSwings is ERC721A, Ownable, ReentrancyGuard {
     function _baseURI() internal view virtual override returns (string memory) {
         return baseURL;
     }
-
+     
     function maxSupply() public view returns (uint256) {
         return _maxSupply;
     }
